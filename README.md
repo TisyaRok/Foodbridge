@@ -1,33 +1,15 @@
-# Final-MVP-submission
+# FoodBridge
 
-# Problem
+An AI-powered forecasting system designed to modernize Penn State's dining supply chain operations.
 
-CPD’s current stocking and supply software (FoodPro) is over 26 years old and lacks modern forecasting capabilities. As a result, forecasting is done entirely manually, and staff must also manually document product expiration dates.
-This creates inefficiencies and risks across the system. Without predictive tools, staff rely on estimation, which can lead to overstocking (causing food waste and increased costs) or understocking (causing shortages and service disruptions).
-“The goal is to have software which looks at the dining hall’s stock and gives its manager a rundown of what they need to get.”
-Additionally, CPD faces budget constraints and cannot secure approval for expensive enterprise systems, creating a need for a cost-effective, intelligent solution that improves decision-making without replacing existing infrastructure.
+## Problem
+CPD's stocking and supply software, FoodPro, is over 26 years old and lacks any forecasting capability. Staff must manually estimate demand and track expiration dates across 2,000+ products — a process that is slow, error-prone, and unsustainable at scale. Without predictive tools, overstocking leads to food waste and inflated costs, while understocking causes shortages and service disruptions. As one stakeholder put it: "The goal is to have software which looks at the dining hall's stock and gives its manager a rundown of what they need to get." CPD also faces budget constraints that rule out expensive enterprise replacements, creating a need for a smart, cost-effective solution that works alongside existing infrastructure.
 
-# Solution
-## About the Model:
-Our solution uses XGBoost, a gradient-boosted machine learning algorithm, to predict semester-level demand for each inventory item. The model learns from historical usage patterns, recent consumption trends, and Penn State's academic calendar to generate accurate, forward-looking order quantity recommendations.
-To improve robustness and reliability, predictions are rounded to whole units and include a 5% buffer to prevent stockouts. This provides staff with a practical, data-driven alternative to manual forecasting while maintaining operational safety.
+## Data Foundation
+CPD provided purchasing and inventory data covering 2,000+ dining commons products, including shelf life, monthly usage, and seasonal consumption trends. This structured, real-world dataset enables our model to capture actual demand patterns and generate reliable predictions under current operating conditions.
 
-## About the Data:
-
-To support the model, the Central Procurement Department (CPD) provided purchasing and inventory data for over 2,000 products used within dining commons. This dataset includes shelf life, monthly usage, and seasonal consumption trends for each item.
-By leveraging this comprehensive and structured dataset, our model is able to capture real-world patterns and generate accurate predictions under current operating conditions.
-
-# Benefits + Impact
-
-Our FoodBridge system is an updated, AI-powered enhancement of FoodPro that enables CPD to make faster, more accurate, and more informed purchasing decisions. It supports both internal warehouses and external suppliers by creating optimized and predictable ordering patterns.
-
-## Benefit
-FoodBridge improves decision-making across PSU’s dining supply chain by providing clear, actionable insights. CPD can quickly identify risks such as overstocking, understocking, and potential expiration issues, allowing staff to act proactively rather than reactively.
-The internal warehouse benefits from improved planning of storage capacity and delivery schedules, reducing bottlenecks and inefficiencies. External suppliers gain more consistent and predictable order patterns, enabling better coordination and alignment with pricing tiers and delivery logistics.
-Additionally, the system reduces manual workload, allowing staff to shift their focus from repetitive tracking tasks to higher-level operational decisions.
+## Benefits
+FoodBridge gives CPD clear, actionable intelligence to replace guesswork. Staff can proactively flag overstocking, understocking, and expiration risks before they become problems. The internal warehouse gains better visibility into storage needs and delivery timing, reducing bottlenecks. External suppliers receive more consistent, predictable orders — improving coordination, pricing alignment, and delivery logistics. Most importantly, staff spend less time on repetitive tracking and more time on strategic decisions.
 
 ## Impact
-
-With FoodBridge, PSU can significantly reduce food waste, lower procurement costs, and streamline operations across its dining supply chain. By replacing manual estimation with AI-driven forecasting, the system increases overall efficiency and reliability.
-CPD staff are empowered to make more strategic decisions, while warehouse operations become smoother and more predictable. At the same time, suppliers benefit from improved demand visibility, strengthening collaboration across the supply chain.
-Beyond Penn State, this solution has strong scalability potential and can be adapted to other universities, hospitals, and large-scale dining systems, enabling broader impact in reducing waste and improving supply chain efficiency.
+FoodBridge enables PSU to reduce food waste, lower procurement costs, and streamline dining operations by replacing manual estimation with AI-driven forecasting. Warehouse workflows become smoother and more predictable, while suppliers benefit from improved demand visibility — strengthening the entire supply chain. Beyond Penn State, the system is scalable to other universities, hospitals, and large-scale dining operations, offering broad potential to cut waste and improve efficiency across institutional food service.
