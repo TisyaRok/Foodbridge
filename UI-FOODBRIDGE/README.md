@@ -1,85 +1,60 @@
-# UI-FOODBRIDGE
+# FoodBridge inventory planning
 
-A procurement planning UI built for PSU's Housing & Food Services. Sits on top of FoodPro to give Central Procurement an intelligent planning table — with ML-assisted risk flags, per-operation demand breakdowns, and real-time order calculations.
+FoodBridge is a React/Vite procurement-planning prototype for Penn State Central Procurement. It supports one focused workflow: identify inventory risk, inspect a transparent demand estimate, change assumptions, prepare an order draft, and export that draft to CSV.
 
----
-
-## Before You Start
-
-Make sure you have these installed:
-
-| Tool | Check | Download |
-|------|-------|----------|
-| **Node.js** (v18+) | `node -v` in terminal | [nodejs.org](https://nodejs.org) |
-| **Git** | `git --version` in terminal | [git-scm.com](https://git-scm.com) |
-
-If those commands return a version number you're good. If not, download and install them first.
-
----
-
-## How to Run
-
-Copy and paste these into your terminal **one line at a time:**
+## Run locally
 
 ```bash
-git clone https://github.com/FoodBridgeAI/UI-FOODBRIDGE.git
-```
-```bash
-cd UI-FOODBRIDGE
-```
-```bash
-npm install
-```
-```bash
-npm run dev
-```
-
-Then open your browser and go to the link your terminal shows — it will look like this:
-
-```
-http://localhost:5173
-```
-
-> ⚠️ Keep the terminal running while you use the app. Closing it stops the server.
-
----
-
-## Getting the Latest Changes
-
-When a teammate pushes updates, run these to sync:
-
-```bash
-git pull
 npm install
 npm run dev
 ```
 
----
+Open the URL printed by Vite. The app uses history-based routes such as `/overview`, `/inventory`, `/inventory/FB-1001`, `/order-draft`, and `/data-quality`. Vite's development and preview servers serve these routes through the app entry point.
 
-## Something Not Working?
+Validation commands:
 
-| Error | Fix |
-|-------|-----|
-| `command not found: npm` | Install Node.js from nodejs.org |
-| `npm install` fails | Make sure you ran `cd UI-FOODBRIDGE` first |
-| Nothing shows at localhost:5173 | Make sure `npm run dev` is still running in your terminal |
-| Blank white screen | Press F12 in browser → Console tab → screenshot the error |
-
----
-
-## Project Structure
-
-```
-UI-FOODBRIDGE/
-├── src/
-│   ├── App.jsx          ← main planning table UI
-│   ├── FoodBridge.jsx   ← FoodBridge components
-│   └── main.jsx         ← entry point
-├── index.html
-├── package.json
-└── vite.config.js
+```bash
+npm run test
+npm run lint
+npm run build
 ```
 
----
+## Data modes
 
-Built by **FoodBridgeAI** · Penn State HFS Procurement Planning
+The interactive planning workspace uses 20 explicitly labeled synthetic items from `src/data/demoInventory.js`. Every item has 12 weekly periods, units, supplier, current and incoming stock, lead time, review period, pack size, unit cost, and safety stock. Chicken breast (`FB-1001`) is the hero item for the interview walkthrough. Demo assumption changes and valid order-draft quantities persist in browser `localStorage` under `foodbridge-demo-planning-v2`. Reset demo restores all seeded assumptions and clears the draft.
+
+The original repository CSV files remain in `public/` and are downloadable from Data quality. They are bundled snapshots, not a live backend. They are deliberately excluded from the interactive recommendations because they lack dated weekly history and reliable unit prices, and the stock-count and aggregate-usage units cannot be reconciled safely. `../ml_model/Model/model.py` remains preserved; it generates a saved monthly suggestion file using average usage, trend, seasonality, a safety buffer, and a volatility cap. This UI does not present that script as a trained or currently served AI model.
+
+## Calculation
+
+`src/planning.js` is the pure source of truth used by tables, status metrics, detail charts, explanations, recommendation totals, and tests.
+
+```text
+average daily usage = mean of available weeks in the selected window / 7
+expected demand = average daily usage × (lead-time days + review-period days)
+net requirement = max(0, expected demand + safety stock − current stock − incoming stock)
+recommendation = net requirement rounded up to the supplier pack size
+```
+
+Missing weeks are excluded from the average and shown as chart gaps; they are never filled with zero. All-missing history produces no recommendation. Zero usage produces “No recent usage” instead of Infinity or NaN. Incoming stock offsets the planning-horizon requirement but does not conceal an immediate on-hand stockout risk. The chart uses the same recent average and prorates the final partial week, so projected chart totals equal expected demand.
+
+Status definitions:
+
+- **Stockout risk:** on-hand days remaining are shorter than the supplier lead time.
+- **Replenish:** stock covers lead time but the calculated planning target still requires an order.
+- **Excess stock:** on-hand coverage exceeds twice the lead-time-plus-review horizon.
+- **Healthy:** current and incoming stock cover the target without excess.
+- **Missing usage / No recent usage:** a human review is required before acting.
+
+## Suggested 5–8 minute demo
+
+1. Open Overview. Explain that every KPI is calculated from the 20 displayed demo items and the current draft. Point out the data-source banner and Reset demo control.
+2. Select **Chicken breast** at the top of Needs attention. Its rising weekly history and low coverage make the replenishment problem visible.
+3. Explain the solid historical line, dashed baseline projection, planning horizon, and “Why this quantity” math. The default uses the last four weeks.
+4. Change **Safety stock from 80 to 160 lb**. The recommendation changes immediately and remains rounded to a 20-lb supplier pack.
+5. Add the recommendation. Point out the in-place confirmation, open Order draft, adjust by a valid 20-lb multiple, and export CSV. State that this creates a local draft and submits nothing to a supplier.
+6. If time remains, open Data quality to show one missing week, a short-history item, and a zero-usage item with the exact handling for each.
+
+## Current limitations
+
+This is an offline interview prototype. It has no authentication, live stock service, supplier submission, delivery-date validation, purchase-order approvals, tax/freight pricing, or trained forecasting service. Synthetic unit costs exclude tax and freight. Incoming stock is assumed usable within the planning horizon; users must verify the actual arrival date. The baseline does not model seasonality, events, menu changes, or confidence intervals. History routes depend on the hosting server returning `index.html` for unknown paths; the included Vite servers do this for local use.
